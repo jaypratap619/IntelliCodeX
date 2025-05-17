@@ -1,0 +1,55 @@
+# === Python / Flask ===
+backend/__pycache__/
+backend/*.pyc
+backend/instance/
+backend/.env
+backend/migrations/
+backend/.pytest_cache/
+backend/.venv/
+backend/venv/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# === Virtual Environment ===
+env/
+venv/
+ENV/
+.venv/
+
+# === Flask/Python Tools ===
+*.log
+*.pot
+*.mo
+*.py[cod]
+*.swp
+*.bak
+
+# === Node / React ===
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.vite/
+frontend/.DS_Store
+frontend/build/
+frontend/.eslintcache
+
+# === System Files ===
+.DS_Store
+Thumbs.db
+
+# === Editor / IDE ===
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# === Logs ===
+*.log
+
+# === OS Specific ===
+ehthumbs.db
+Icon?
+Desktop.ini
