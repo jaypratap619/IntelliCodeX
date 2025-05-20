@@ -1,6 +1,17 @@
-function App() {
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Home from './pages/Home'
+import Sandbox from './pages/Sandbox'
+import NotFound from './pages/NotFound'
+import type React from 'react'
+const App : React.FC = () => {
   return (
-    <div>App</div>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Home />}/>
+        <Route path='/sandbox' element={<Sandbox />}/>
+        <Route path='*' element={<NotFound />}/>
+      </Routes>
+    </BrowserRouter>
   )
 }
 
