@@ -6,7 +6,7 @@ import Preview from "../components/Editor/Preview"
 const Sandbox: React.FC = () => {
   return (
     <div className="h-screen bg-gray-800">
-        <h2>Code Editor</h2>
+        <h2>Sandbox</h2>
         <div className="flex">
             <FileTree />
             <CodeEditor />
