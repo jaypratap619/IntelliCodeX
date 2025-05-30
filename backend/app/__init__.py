@@ -19,8 +19,17 @@ def create_app():
     jwt.init_app(app)
     bcrypt.init_app(app)
 
-    from app.routes.auth import auth_bp
-    app.register_blueprint(auth_bp, url_prefix="/api/auth")
+    try:
+        from app.routes.auth import auth_bp
+        app.register_blueprint(auth_bp, url_prefix="/api/auth")
+    except ImportError:
+        raise RuntimeError("Could not import 'auth_bp' from app.routes.auth")
+
+    try:
+        from app.routes.project import project_bp
+        app.register_blueprint(project_bp, url_prefix="/api/project")
+    except ImportError:
+        raise RuntimeError("Could not import 'project_bp' from app.routes.project")
 
     return app
 
