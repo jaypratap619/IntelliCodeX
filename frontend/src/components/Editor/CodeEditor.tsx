@@ -4,7 +4,7 @@ type Props = {}
 
 const CodeEditor: React.FC = (props: Props) => {
   return (
-    <div className='bg-red-500 h-175 w-2/4'>CodeEditor</div>
+    <div className='border-2 border-solid h-175 w-2/4 p-4'>CodeEditor</div>
   )
 }
 

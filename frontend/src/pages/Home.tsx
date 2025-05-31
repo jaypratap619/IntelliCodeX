@@ -2,45 +2,55 @@ import React, {useState, useEffect} from "react";
 import axios from "axios";
 import { FaReact,FaNode } from "react-icons/fa";
 import Navbar from "../components/UI/Navbar";
+import { useNavigate } from "react-router-dom";
 interface IProject {
-  id: string
-  name: string
-  type: string
+  project_id: string
+  project_name: string
+  project_type: string
 }
 
 const dummyProjectData: IProject[] = [
   {
-    id: "101",
-    name: "Some Shitty Project",
-    type: "react-js"
+    project_id: "101",
+    project_name: "Some Shitty Project",
+    project_type: "react-js"
   },
   {
-    id: "102",
-    name: "Some Dummy Project",
-    type: "node-js"
+    project_id: "102",
+    project_name: "Some Dummy Project",
+    project_type: "node-js"
   },
   {
-    id: "103",
-    name: "Faltu Project",
-    type: "react-ts"
+    project_id: "103",
+    project_name: "Faltu Project",
+    project_type: "react-ts"
   },
   
 ]
 
 const Home: React.FC = () => {
+  let navigate = useNavigate()
   const [projects, setProjects] = useState<IProject[]>(dummyProjectData)
   const [projectName, setProjectName] = useState<string>('')
   const [projectType, setProjectType] = useState<string>('')
-  useEffect(()=>{
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+  const createProject = () =>{
     try{
-      axios.get("api/projects").then(res => {
-        // setProjects(res.data.projects)
+      axios.post(API_BASE_URL+ "/project/create", {
+        projectName: projectName,
+        projectType: projectType
+      }).then(res => {
+        console.log("res", res)
+        setProjects([...projects, res.data])
+        navigate(`/sandbox/${res.data.project_id}`);
       })
     }
     catch{
       console.log('API call to api/projects failed')
-    }
-  },[])
+    }    
+  }
+  useEffect(()=>{ console.log(projects) }, [projects])
 
   const getIcon = (type: string) => {
     if (type.includes("node")) return <FaNode className="inline-block mr-2 text-green-600 text-3xl" />;
@@ -57,13 +67,13 @@ const Home: React.FC = () => {
         <h1 className="text-2xl font-semibold mb-6">Your Projects</h1>
         <ul>
           {projects.map((p) => (
-            <li key={p.id} className="mb-2">
+            <li key={p.project_id} className="mb-2">
               <div className="p-2 bg-white rounded shadow flex items-center">
                 <div>
-                  {getIcon(p.type)}
+                  {getIcon(p.project_type)}
                 </div>
                 <div>
-                  {p.name}
+                  {p.project_name}
                 </div>
               </div>
             </li>
@@ -111,7 +121,7 @@ const Home: React.FC = () => {
             </div>
           </div>
           <button
-            // onClick={createProject}
+            onClick={createProject}
             className="px-4 py-2 bg-blue-600 text-white rounded"
           >
             Create Project

@@ -24,7 +24,7 @@ def createProject():
     shutil.copytree(template_path, workspace_path)
     # Optionally insert project entry into DB here
 
-    return jsonify({"project_id": project_id, "name": project_name, "type": project_type})
+    return jsonify({"project_id": project_id, "project_name": project_name, "project_type": project_type})
 
 import os
 

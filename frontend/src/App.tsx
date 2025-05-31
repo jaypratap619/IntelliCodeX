@@ -8,7 +8,7 @@ const App : React.FC = () => {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Home />}/>
-        <Route path='/sandbox' element={<Sandbox />}/>
+        <Route path='/sandbox/:project_id' element={<Sandbox />}/>
         <Route path='*' element={<NotFound />}/>
       </Routes>
     </BrowserRouter>
