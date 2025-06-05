@@ -3,8 +3,9 @@ from app.db import get_db_connection
 import datetime
 import uuid
 import shutil
-project_bp = Blueprint("project", __name__)
+import os
 
+project_bp = Blueprint("project", __name__)
 
 print('project_bp', project_bp)
 
@@ -26,20 +27,26 @@ def createProject():
 
     return jsonify({"project_id": project_id, "project_name": project_name, "project_type": project_type})
 
-import os
+
+def createFileStructure(path):
+    root = os.listdir(path)
+    file_tree = {}
+    for entry in root:
+        full_path = os.path.join(path, entry)
+        if os.path.isdir(full_path):
+            file_tree[entry] = createFileStructure(full_path)
+        else:
+            try:
+                with open(full_path, "r", encoding="utf-8") as f:
+                    file_tree[entry] = f.read()
+            except:
+                file_tree[entry] = "Error OPening file"
+    return file_tree
 
 @project_bp.route("/get_project/<project_id>/files", methods=["GET"])
 def get_project_files(project_id):
     base_path = f"D:/MyProject/IntelliCodeX/backend/app/routes/workspaces/{project_id}"
-
-    file_tree = {}
-    
-    for root, dirs, files in os.walk(base_path):
-        for filename in files:
-            filepath = os.path.join(root, filename)
-            relative_path = os.path.relpath(filepath, base_path)
-            with open(filepath, "r", encoding="utf-8") as f:
-                file_tree[relative_path] = f.read()
-
-    return jsonify({"files": file_tree})
+    file_tree = createFileStructure(base_path)
+    print("file_tree", file_tree)   
+    return jsonify({"root": file_tree})
 
