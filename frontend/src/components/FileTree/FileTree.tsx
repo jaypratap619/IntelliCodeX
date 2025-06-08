@@ -28,7 +28,7 @@ const FileTree = (props: IProjectResponse) => {
   };
 
   return (
-    <div className="h-[700px] w-1/4 border border-gray-300 rounded-lg p-4 shadow-md bg-white overflow-y-auto">
+    <div className="h-[650px] border border-gray-300 rounded-lg p-4 shadow-md bg-white overflow-y-auto">
       <h2 className="text-lg font-semibold mb-4">Project Files</h2>
       {props?.responseData?.root && recursiveTree(props.responseData.root)}
     </div>

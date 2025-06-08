@@ -11,7 +11,7 @@ import type { IProjectResponse } from "../../pages/Sandbox.tsx";
 
 // };
 
-const Preview= (props: IProjectResponse) => {
+const Preview = (props: IProjectResponse) => {
   // const { project_id } = useParams();
   // const { data, loading, error } = useFetch(`/project/get_project/${project_id}/files`)
 
@@ -81,8 +81,8 @@ const Preview= (props: IProjectResponse) => {
 
   if (props.responseData) {
     return (
-      <div className="h-175 w-1/4 border-2 border-solid p-4">
-        Preview
+      <div className="h-[650px] border border-gray-300 rounded-lg p-4 shadow-md bg-white">
+        <h2 className="text-lg font-semibold mb-4">Preview</h2>
         <div className="flex flex-col h-screen">
           <iframe
             title="preview"

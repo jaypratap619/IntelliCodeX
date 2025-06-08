@@ -30,19 +30,19 @@ const CodeEditor = () => {
   }
 
   const handleCloseTab = (index: number) => {
-    const newFiles = files.filter((_,i) => i != index);
+    const newFiles = files.filter((_, i) => i != index);
     setFiles(newFiles);
 
-    if(index === activeTab) {
+    if (index === activeTab) {
       // Close the current Tab and move to the previous tab if exist else move to first
-      setActiveTab(index > 0 ? index-1: 0);
+      setActiveTab(index > 0 ? index - 1 : 0);
     }
   }
 
   return (
-    <div className=" h-[600px] w-full p-4 flex flex-col">
+    <div className=" h-[650px] flex flex-col">
       {/* Tabs */}
-      <div className="flex space-x-4 border-b border-gray-300 mb-2 overflow-x-auto">
+      <div className="flex space-x-4 border-gray-300 mb-2 overflow-x-auto">
         {files.map((file, index) => (
           <div
             key={file.name}

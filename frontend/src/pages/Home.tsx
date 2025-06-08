@@ -66,7 +66,7 @@ const Home: React.FC = () => {
 
   return <div className="h-screen">
     <Navbar />
-    <div className="mb-6 text-3xl font-bold leading-none tracking-tight text-gray-900 md:text-3xl lg:text-4xl text-center">Welcome to IntelliCodeX</div>
+    <div className="mb-6 text-3xl font-bold leading-none tracking-tight text-gray-900 md:text-3xl lg:text-4xl text-center pt-3">Welcome to IntelliCodeX</div>
     <p className="text-gray-600 mb-6 text-center text-xl m-3">Start building your applications with ready-to-use React or Node.js environments with Live preview.<br />Just name your project, choose a template, and get started instantly!</p>
     <div className="flex justify-center mx-2 sm:mx-6 md:mx-24 lg:mx-36 xl:mx-64">
       <aside className="w-2/5 bg-gray-100 p-8 min-h-100">
