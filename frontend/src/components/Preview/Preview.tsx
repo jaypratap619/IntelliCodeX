@@ -1,21 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+// import { useParams } from "react-router-dom";
 import * as esbuild from "esbuild-wasm";
 import { virtualPlugin, flattenFiles } from "../../utils/utils.ts";
-import type { AxiosRequestConfig } from "axios";
-import useAxios from "../../hooks/useAxios.tsx";
+import type { IProjectResponse } from "../../pages/Sandbox.tsx";
+// import type { AxiosRequestConfig } from "axios";
+// import useAxios from "../../hooks/useAxios.tsx";
 
 
-type Props = {};
+// type Props = {
 
-const Preview: React.FC = (props: Props) => {
-  const { project_id } = useParams();
+// };
+
+const Preview= (props: IProjectResponse) => {
+  // const { project_id } = useParams();
   // const { data, loading, error } = useFetch(`/project/get_project/${project_id}/files`)
-  const config: AxiosRequestConfig = {
-    url: `/projects/${project_id}`,
-    method: 'GET'
-  }
-  const { responseData, loading, error, callApi } = useAxios(config)
+
 
   const iframeHtml = `
   <html>
@@ -29,9 +28,9 @@ const Preview: React.FC = (props: Props) => {
   const [files, setFiles] = useState<Record<string, string> | null>(null);
   const [isEsbuildInitialized, setIsEsbuildInitialized] = useState(false);
 
-  useEffect(() => {
-    callApi()
-  }, [])
+  // useEffect(() => {
+  //   props.callApi()
+  // }, [])
 
 
   useEffect(() => {
@@ -66,21 +65,21 @@ const Preview: React.FC = (props: Props) => {
   }, [isEsbuildInitialized, files]);
 
   useEffect(() => {
-    if (responseData) {
-      const flatFiles = flattenFiles(responseData.root);
+    if (props.responseData) {
+      const flatFiles = flattenFiles(props.responseData.root);
       console.log("flatFiles", flatFiles);
       setFiles(flatFiles);
     }
-  }, [responseData]);
+  }, [props.responseData]);
 
-  if (error) {
-    return <>{error}</>
+  if (props.error) {
+    return <>{props.error}</>
   }
-  if (loading) {
+  if (props.loading) {
     return <>....Loading</>
   }
 
-  if (responseData) {
+  if (props.responseData) {
     return (
       <div className="h-175 w-1/4 border-2 border-solid p-4">
         Preview

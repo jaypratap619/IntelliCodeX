@@ -1,11 +1,10 @@
-import React from 'react'
+// import { type IProjectResponse } from '../../pages/Sandbox.tsx'
 
-type Props = {}
 
-const FileTree: React.FC = (props: Props) => {
+const FileTree = () => {
   return (
     <div className='h-175 w-1/4 border-2 border-solid p-4'>FileTree</div>
   )
 }
 
-export default FileTree
+export default FileTree 

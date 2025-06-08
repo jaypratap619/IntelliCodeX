@@ -3,8 +3,8 @@ import { useState } from "react";
 
 export default function useAxios(config: AxiosRequestConfig) {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-    const [responseData, setResponseData] = useState<any | null>(null);
-    const [loading, setLoading] = useState<Boolean>(true);
+    const [responseData, setResponseData] = useState<object | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
     async function callApi(newConfig?: AxiosRequestConfig) {
         try {
