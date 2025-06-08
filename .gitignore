@@ -7,6 +7,7 @@ backend/migrations/
 backend/.pytest_cache/
 backend/.venv/
 backend/venv/
+backend/app/routes/workspaces
 *.pyc
 *.pyo
 *.pyd

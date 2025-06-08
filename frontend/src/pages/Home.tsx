@@ -1,8 +1,9 @@
-import React, {useState, useEffect} from "react";
-import axios from "axios";
-import { FaReact,FaNode } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { type AxiosRequestConfig } from "axios";
+import { FaReact, FaNode } from "react-icons/fa";
 import Navbar from "../components/UI/Navbar";
 import { useNavigate } from "react-router-dom";
+import useAxios from "../hooks/useAxios";
 interface IProject {
   project_id: string
   project_name: string
@@ -25,7 +26,7 @@ const dummyProjectData: IProject[] = [
     project_name: "Faltu Project",
     project_type: "react-ts"
   },
-  
+
 ]
 
 const Home: React.FC = () => {
@@ -33,34 +34,40 @@ const Home: React.FC = () => {
   const [projects, setProjects] = useState<IProject[]>(dummyProjectData)
   const [projectName, setProjectName] = useState<string>('')
   const [projectType, setProjectType] = useState<string>('')
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const config: AxiosRequestConfig = {
+    url: `/projects/create`,
+    method: 'POST'
+  }
+  const { responseData, callApi } = useAxios(config)
 
-  const createProject = () =>{
-    try{
-      axios.post(API_BASE_URL+ "/project/create", {
+  const createProject = () => {
+    const newConfig: AxiosRequestConfig = {
+      data: {
         projectName: projectName,
         projectType: projectType
-      }).then(res => {
-        console.log("res", res)
-        setProjects([...projects, res.data])
-        navigate(`/sandbox/${res.data.project_id}`);
-      })
+      }
     }
-    catch{
-      console.log('API call to api/projects failed')
-    }    
+    callApi(newConfig)
   }
-  useEffect(()=>{ console.log(projects) }, [projects])
+  useEffect(() => { console.log(projects) }, [projects])
+  useEffect(() => {
+    if (responseData) {
+      setProjects((prev) => [...prev, responseData]);
+      navigate(`/sandbox/${responseData.project_id}`);
+    }
+  }, [responseData, navigate]);
+
 
   const getIcon = (type: string) => {
     if (type.includes("node")) return <FaNode className="inline-block mr-2 text-green-600 text-3xl" />;
     return <FaReact className="inline-block mr-2 text-blue-500 text-3xl" />;
   };
 
+
   return <div className="h-screen">
     <Navbar />
     <div className="mb-6 text-3xl font-bold leading-none tracking-tight text-gray-900 md:text-3xl lg:text-4xl text-center">Welcome to IntelliCodeX</div>
-    <p className="text-gray-600 mb-6 text-center text-xl m-3">Start building your applications with ready-to-use React or Node.js environments with Live preview.<br/>Just name your project, choose a template, and get started instantly!</p>
+    <p className="text-gray-600 mb-6 text-center text-xl m-3">Start building your applications with ready-to-use React or Node.js environments with Live preview.<br />Just name your project, choose a template, and get started instantly!</p>
     <div className="flex justify-center mx-2 sm:mx-6 md:mx-24 lg:mx-36 xl:mx-64">
       <aside className="w-2/5 bg-gray-100 p-8 min-h-100">
         {/* <div className="text-l font-bold mb-3">Your Projects</div> */}
@@ -93,27 +100,24 @@ const Home: React.FC = () => {
           <label className="block text-lg font-medium">Select a template:</label>
           <div className="grid grid-cols-3 gap-4">
             <div
-              className={`cursor-pointer border rounded p-4 flex flex-col items-center justify-center shadow hover:shadow-md transition ${
-                projectType === "react-js" ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white"
-              }`}
+              className={`cursor-pointer border rounded p-4 flex flex-col items-center justify-center shadow hover:shadow-md transition ${projectType === "react-js" ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white"
+                }`}
               onClick={() => setProjectType("react-js")}
             >
               <FaReact className={`text-3xl mb-2 ${projectType === "react-js" ? "text-blue-600" : "text-blue-500"}`} />
               <span className="font-semibold">React</span>
             </div>
             <div
-              className={`cursor-pointer border rounded p-4 flex flex-col items-center justify-center shadow hover:shadow-md transition ${
-                projectType === "react-ts" ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white"
-              }`}
+              className={`cursor-pointer border rounded p-4 flex flex-col items-center justify-center shadow hover:shadow-md transition ${projectType === "react-ts" ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white"
+                }`}
               onClick={() => setProjectType("react-ts")}
             >
               <FaReact className={`text-3xl mb-2 ${projectType === "react-ts" ? "text-cyan-700" : "text-cyan-600"}`} />
               <span className="font-semibold">React (TS)</span>
             </div>
             <div
-              className={`cursor-pointer border rounded p-4 flex flex-col items-center justify-center shadow hover:shadow-md transition ${
-                projectType === "node-js" ? "border-green-500 bg-green-50" : "border-gray-300 bg-white"
-              }`}
+              className={`cursor-pointer border rounded p-4 flex flex-col items-center justify-center shadow hover:shadow-md transition ${projectType === "node-js" ? "border-green-500 bg-green-50" : "border-gray-300 bg-white"
+                }`}
               onClick={() => setProjectType("node-js")}
             >
               <FaNode className={`text-3xl mb-2 ${projectType === "node-js" ? "text-green-700" : "text-green-600"}`} />
@@ -122,7 +126,7 @@ const Home: React.FC = () => {
           </div>
           <button
             onClick={createProject}
-            className="px-4 py-2 bg-blue-600 text-white rounded"
+            className="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer"
           >
             Create Project
           </button>

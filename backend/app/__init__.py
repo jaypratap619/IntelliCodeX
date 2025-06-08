@@ -27,7 +27,7 @@ def create_app():
 
     try:
         from app.routes.project import project_bp
-        app.register_blueprint(project_bp, url_prefix="/api/project")
+        app.register_blueprint(project_bp, url_prefix="/api/projects")
     except ImportError:
         raise RuntimeError("Could not import 'project_bp' from app.routes.project")
 

@@ -5,7 +5,7 @@ import uuid
 import shutil
 import os
 
-project_bp = Blueprint("project", __name__)
+project_bp = Blueprint("projects", __name__)
 
 print('project_bp', project_bp)
 
@@ -43,7 +43,7 @@ def createFileStructure(path):
                 file_tree[entry] = "Error OPening file"
     return file_tree
 
-@project_bp.route("/get_project/<project_id>/files", methods=["GET"])
+@project_bp.route("/<project_id>", methods=["GET"])
 def get_project_files(project_id):
     base_path = f"D:/MyProject/IntelliCodeX/backend/app/routes/workspaces/{project_id}"
     file_tree = createFileStructure(base_path)
