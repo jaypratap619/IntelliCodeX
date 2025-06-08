@@ -30,7 +30,7 @@ const dummyProjectData: IProject[] = [
 ]
 
 const Home: React.FC = () => {
-  let navigate = useNavigate()
+  const navigate = useNavigate()
   const [projects, setProjects] = useState<IProject[]>(dummyProjectData)
   const [projectName, setProjectName] = useState<string>('')
   const [projectType, setProjectType] = useState<string>('')
@@ -38,7 +38,7 @@ const Home: React.FC = () => {
     url: `/projects/create`,
     method: 'POST'
   }
-  const { responseData, callApi } = useAxios(config)
+  const { responseData, callApi }: any = useAxios(config)
 
   const createProject = () => {
     const newConfig: AxiosRequestConfig = {
