@@ -9,6 +9,8 @@ project_bp = Blueprint("projects", __name__)
 
 print('project_bp', project_bp)
 
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
 # CREATE ROUTE
 @project_bp.route("/create", methods=["POST"])
 def createProject():
@@ -18,8 +20,8 @@ def createProject():
     project_type = data.get("projectType")
     project_id = str(uuid.uuid4())
     print("project_id", type(project_id))
-    template_path = f"D:/MyProject/IntelliCodeX/backend/app/routes/templates/{project_type}"
-    workspace_path = f"D:/MyProject/IntelliCodeX/backend/app/routes/workspaces/{project_id}"
+    template_path = f"{base_dir}/templates/{project_type}"
+    workspace_path = f"{base_dir}/workspaces/{project_id}"
     print("template_path", template_path)
     print("workspace_path", workspace_path)
     shutil.copytree(template_path, workspace_path)
@@ -45,7 +47,7 @@ def createFileStructure(path):
 
 @project_bp.route("/<project_id>", methods=["GET"])
 def get_project_files(project_id):
-    base_path = f"D:/MyProject/IntelliCodeX/backend/app/routes/workspaces/{project_id}"
+    base_path = f"{base_dir}/workspaces/{project_id}"
     file_tree = createFileStructure(base_path)
     print("file_tree", file_tree)   
     return jsonify({"root": file_tree})
