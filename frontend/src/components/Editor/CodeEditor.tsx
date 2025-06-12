@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 // import type { IProjectResponse } from "../../pages/Sandbox";
 import { Editor } from "@monaco-editor/react";
+import { FileTreeContext } from "../../context/FileTreeContext";
 
 interface File {
   name: string;
@@ -9,16 +10,58 @@ interface File {
 }
 
 
-const initialFiles: File[] = [
-  { name: 'index.js', language: 'javascript', value: '// index.js\nconsole.log("Hello World");' },
-  { name: 'style.css', language: 'css', value: '/* style.css */\nbody { margin: 0; }' },
-  { name: 'README.md', language: 'markdown', value: '# README\nWelcome to the project.' }
-]
+// const initialFiles: File[] = [
+//   { name: 'index.js', language: 'javascript', value: '// index.js\nconsole.log("Hello World");' },
+//   { name: 'style.css', language: 'css', value: '/* style.css */\nbody { margin: 0; }' },
+//   { name: 'README.md', language: 'markdown', value: '# README\nWelcome to the project.' }
+// ]
 
 
 const CodeEditor = () => {
-  const [files, setFiles] = useState<File[]>(initialFiles);
+  const fileTreeContext = useContext(FileTreeContext);
+  if (!fileTreeContext) {
+    throw new Error("FileTreeContext is not provided");
+  }
+  const { fileTreeState, activeFile } = fileTreeContext;
+  console.log("fileTreeState", fileTreeState);
+
+  function extractExtension(fileName: string) {
+    const obj = {
+      js: 'javascript',
+      css: 'css',
+      html: 'html',
+      md: 'markdown'
+    };
+    const ext = fileName.split('.')[1]
+    return obj[ext as keyof typeof obj];
+  }
+
+  useEffect(() => {
+    setFiles([{ name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value}])
+  }, [])
+
+  useEffect(() => {
+    // setFiles([...files, { name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value}])
+    files.map((file) => {
+      if (file.name != activeFile.key) {
+        setFiles([...files, { name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value }])
+      }
+    })
+
+    // setFiles([{ name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value}])
+  }, [activeFile.key])
+
+
+
+
+
+
+
+  // const [files, setFiles] = useState<File[]>([{ name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value }]);
+  const [files, setFiles] = useState<File[]>([]);
+
   const [activeTab, setActiveTab] = useState<number>(0);
+
 
 
   const handleEditorChange = (value: string | undefined) => {
@@ -30,6 +73,7 @@ const CodeEditor = () => {
   }
 
   const handleCloseTab = (index: number) => {
+    console.log("Index: ", index, activeTab);
     const newFiles = files.filter((_, i) => i != index);
     setFiles(newFiles);
 
@@ -65,7 +109,7 @@ const CodeEditor = () => {
         <div className="flex-1">
           <Editor
             height="100%"
-            value={files[activeTab].value}
+            value={activeFile.value}
             language={files[activeTab].language}
             theme="vs-dark"
             onChange={handleEditorChange}

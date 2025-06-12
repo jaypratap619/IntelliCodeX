@@ -3,16 +3,17 @@ import FileName from "./FileName";
 import FolderName from "./FolderName";
 
 const FileTree = (props: IProjectResponse) => {
+
   const isFile = (item: any) => typeof item === "string";
 
   const recursiveTree = (item: any, depth: number = 0) => {
     return Object.keys(item).map((key) => {
       const value = item[key];
       const padding = `pl-${Math.min(depth * 4, 20)}`; // max padding to avoid overflow
-
+      console.log(key, value);
       return isFile(value) ? (
         <div key={key} className={`flex items-center space-x-2 py-1 ${padding} hover:bg-gray-100 rounded cursor-pointer`}>
-          <FileName filename={key} />
+          <FileName filename={key} fileValue={value} />
         </div>
       ) : (
         <div key={key} className={`py-1`}>
