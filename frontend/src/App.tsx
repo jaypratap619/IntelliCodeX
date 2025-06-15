@@ -11,27 +11,10 @@ export interface IProject {
   project_type: string
 }
 
-const dummyProjectData: IProject[] = [
-  {
-    project_id: "101",
-    project_name: "Some Shitty Project",
-    project_type: "react-js"
-  },
-  {
-    project_id: "102",
-    project_name: "Some Dummy Project",
-    project_type: "node-js"
-  },
-  {
-    project_id: "103",
-    project_name: "Faltu Project",
-    project_type: "react-ts"
-  },
-
-]
+const initalProjectsData: IProject[] = []
 
 const App: React.FC = () => {
-  const [projects, setProjects] = useState<IProject[]>(dummyProjectData)
+  const [projects, setProjects] = useState<IProject[]>(initalProjectsData)
   const [fileTreeState, setFileTreeState] = useState<IResponseData>({});
   const [activeFile, setActiveFile] = useState<IFile>({ path: "root.src", key: "App.js", value: "" });
   return (

@@ -139,6 +139,12 @@ const CodeEditor = () => {
             language={files[activeTab].language}
             theme="vs-dark"
             onChange={handleEditorChange}
+            options={{
+              suggestOnTriggerCharacters: true,
+              quickSuggestions: true,
+              wordBasedSuggestions: "currentDocument",
+              tabCompletion: "on",
+            }}
           />
         </div>
       ) : (
