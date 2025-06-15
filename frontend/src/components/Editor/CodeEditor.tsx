@@ -9,20 +9,15 @@ interface File {
   value: string
 }
 
-
-// const initialFiles: File[] = [
-//   { name: 'index.js', language: 'javascript', value: '// index.js\nconsole.log("Hello World");' },
-//   { name: 'style.css', language: 'css', value: '/* style.css */\nbody { margin: 0; }' },
-//   { name: 'README.md', language: 'markdown', value: '# README\nWelcome to the project.' }
-// ]
-
-
 const CodeEditor = () => {
   const fileTreeContext = useContext(FileTreeContext);
+  const [files, setFiles] = useState<File[]>([]);
+  const [activeTab, setActiveTab] = useState<number>(0);
+
   if (!fileTreeContext) {
     throw new Error("FileTreeContext is not provided");
   }
-  const { fileTreeState, activeFile } = fileTreeContext;
+  const { fileTreeState, activeFile, setActiveFile } = fileTreeContext;
   console.log("fileTreeState", fileTreeState);
 
   function extractExtension(fileName: string) {
@@ -37,7 +32,7 @@ const CodeEditor = () => {
   }
 
   useEffect(() => {
-    setFiles([{ name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value}])
+    setFiles([{ name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value }])
   }, [])
 
   useEffect(() => {
@@ -51,16 +46,7 @@ const CodeEditor = () => {
     // setFiles([{ name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value}])
   }, [activeFile.key])
 
-
-
-
-
-
-
   // const [files, setFiles] = useState<File[]>([{ name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value }]);
-  const [files, setFiles] = useState<File[]>([]);
-
-  const [activeTab, setActiveTab] = useState<number>(0);
 
 
 
@@ -83,6 +69,15 @@ const CodeEditor = () => {
     }
   }
 
+  const openFile = (file: File, index: number) => {
+    if (activeTab == index) return;
+    setActiveTab(index)
+    setActiveFile({
+      key: file.name,
+      value: file.value
+    })
+  }
+
   return (
     <div className=" h-[650px] flex flex-col">
       {/* Tabs */}
@@ -93,7 +88,7 @@ const CodeEditor = () => {
             className={`flex items-center space-x-1 px-4 py-2 text-sm font-medium rounded-t ${index === activeTab ? 'bg-white border border-b-0 border-gray-300 text-blue-600' : 'text-gray-600 bg-gray-100'
               }`}
           >
-            <button onClick={() => setActiveTab(index)}>{file.name}</button>
+            <button onClick={() => openFile(file, index)}>{file.name}</button>
             <button
               className="text-gray-500 hover:text-red-600 ml-2"
               onClick={() => handleCloseTab(index)}

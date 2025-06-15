@@ -1,8 +1,11 @@
+import { useContext } from "react";
 import type { IProjectResponse } from "../../pages/Sandbox";
 import FileName from "./FileName";
 import FolderName from "./FolderName";
+import { FileTreeContext } from "../../context/FileTreeContext";
 
 const FileTree = (props: IProjectResponse) => {
+  const { projects } = useContext(FileTreeContext)
 
   const isFile = (item: any) => typeof item === "string";
 
@@ -30,7 +33,7 @@ const FileTree = (props: IProjectResponse) => {
 
   return (
     <div className="h-[650px] border border-gray-300 rounded-lg p-4 shadow-md bg-white overflow-y-auto">
-      <h2 className="text-lg font-semibold mb-4">Project Files</h2>
+      <h2 className="text-lg font-semibold mb-4">{projects[projects.length - 1].project_name}</h2>
       {props?.responseData?.root && recursiveTree(props.responseData.root)}
     </div>
   );

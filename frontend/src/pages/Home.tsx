@@ -1,39 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { type AxiosRequestConfig } from "axios";
 import { FaReact, FaNode } from "react-icons/fa";
 import Navbar from "../components/UI/Navbar";
 import { useNavigate } from "react-router-dom";
 import useAxios from "../hooks/useAxios";
-interface IProject {
-  project_id: string
-  project_name: string
-  project_type: string
-}
+import { FileTreeContext } from "../context/FileTreeContext";
+import type { IProject } from "../App";
 
-const dummyProjectData: IProject[] = [
-  {
-    project_id: "101",
-    project_name: "Some Shitty Project",
-    project_type: "react-js"
-  },
-  {
-    project_id: "102",
-    project_name: "Some Dummy Project",
-    project_type: "node-js"
-  },
-  {
-    project_id: "103",
-    project_name: "Faltu Project",
-    project_type: "react-ts"
-  },
 
-]
 
 const Home: React.FC = () => {
   const navigate = useNavigate()
-  const [projects, setProjects] = useState<IProject[]>(dummyProjectData)
   const [projectName, setProjectName] = useState<string>('')
   const [projectType, setProjectType] = useState<string>('')
+  const { projects, setProjects } = useContext(FileTreeContext)
   const config: AxiosRequestConfig = {
     url: `/projects/create`,
     method: 'POST'
@@ -73,7 +53,7 @@ const Home: React.FC = () => {
         {/* <div className="text-l font-bold mb-3">Your Projects</div> */}
         <h1 className="text-2xl font-semibold mb-6">Your Projects</h1>
         <ul>
-          {projects.map((p) => (
+          {projects.map((p: IProject) => (
             <li key={p.project_id} className="mb-2">
               <div className="p-2 bg-white rounded shadow flex items-center">
                 <div>
@@ -136,3 +116,5 @@ const Home: React.FC = () => {
   </div>
 };
 export default Home;
+
+
