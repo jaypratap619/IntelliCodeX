@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 // import { useParams } from "react-router-dom";
 import * as esbuild from "esbuild-wasm";
 import { virtualPlugin, flattenFiles } from "../../utils/utils.ts";
-import type { IProjectResponse } from "../../pages/Sandbox.tsx";
+import { FileTreeContext } from "../../context/FileTreeContext.ts";
 // import type { AxiosRequestConfig } from "axios";
 // import useAxios from "../../hooks/useAxios.tsx";
 
@@ -11,10 +11,10 @@ import type { IProjectResponse } from "../../pages/Sandbox.tsx";
 
 // };
 
-const Preview = (props: IProjectResponse) => {
+const Preview = () => {
   // const { project_id } = useParams();
   // const { data, loading, error } = useFetch(`/project/get_project/${project_id}/files`)
-
+  const {fileTreeState} = useContext(FileTreeContext)
 
   const iframeHtml = `
   <html>
@@ -65,21 +65,21 @@ const Preview = (props: IProjectResponse) => {
   }, [isEsbuildInitialized, files]);
 
   useEffect(() => {
-    if (props.responseData) {
-      const flatFiles = flattenFiles(props.responseData.root);
+    if (fileTreeState) {
+      const flatFiles = flattenFiles(fileTreeState.root);
       console.log("flatFiles", flatFiles);
       setFiles(flatFiles);
     }
-  }, [props.responseData]);
+  }, [fileTreeState]);
 
-  if (props.error) {
-    return <>{props.error}</>
-  }
-  if (props.loading) {
-    return <>....Loading</>
-  }
+  // if (props.error) {
+  //   return <>{props.error}</>
+  // }
+  // if (props.loading) {
+  //   return <>....Loading</>
+  // }
 
-  if (props.responseData) {
+  if (fileTreeState) {
     return (
       <div className="h-[650px] border border-gray-300 rounded-lg p-4 shadow-md bg-white">
         <h2 className="text-lg font-semibold mb-4">Preview</h2>

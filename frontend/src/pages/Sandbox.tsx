@@ -23,6 +23,7 @@ export interface IProjectResponse {
 }
 
 export interface IFile {
+  path?: string | "";
   key: string;
   value: string
 }
@@ -52,8 +53,9 @@ const Sandbox = () => {
   useEffect(() => {
     console.log("ResponseData:", responseData)
     if (responseData && responseData.root && responseData.root.src) {
+      console.log("Key: ", activeFile.key)
       // root.src["App.js"]
-      setActiveFile({ key: activeFile.key, value: responseData?.root?.src?.[activeFile.key] })
+      setActiveFile({ path: activeFile.path, key: activeFile.key, value: responseData?.root?.src?.[activeFile.key] })
       setFileTreeState(responseData);
     }
   }, [responseData, activeFile.key])

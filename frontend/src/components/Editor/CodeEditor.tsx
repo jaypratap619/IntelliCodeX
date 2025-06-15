@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useContext, useEffect, useState } from "react";
 // import type { IProjectResponse } from "../../pages/Sandbox";
 import { Editor } from "@monaco-editor/react";
@@ -17,7 +18,7 @@ const CodeEditor = () => {
   if (!fileTreeContext) {
     throw new Error("FileTreeContext is not provided");
   }
-  const { fileTreeState, activeFile, setActiveFile } = fileTreeContext;
+  const { fileTreeState, setFileTreeState, activeFile, setActiveFile } = fileTreeContext;
   console.log("fileTreeState", fileTreeState);
 
   function extractExtension(fileName: string) {
@@ -48,15 +49,45 @@ const CodeEditor = () => {
 
   // const [files, setFiles] = useState<File[]>([{ name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value }]);
 
+  // useEffect(() => {
+  //   console.log("NewFileTree:", fileTreeState)
+  // }, [fileTreeState])
+
+  function getValueByPath(obj: Record<string, any>, path: string, value: string) {
+    console.log("Hi There...")
+    const keys = path.split(".");
+    let current = obj;
+
+    for (const key of keys) {
+      if (current && key in current) {
+        current = current[key];
+      }
+      console.log("Current: ", current);
+    }
+    current[activeFile.key] = value;
+  }
 
 
   const handleEditorChange = (value: string | undefined) => {
+    console.log("ActiveFile: ", activeFile)
+    console.log("Value: ", value)
+    let path = ""
+    path = activeFile?.path || ""
+    console.log("Path:", path)
     if (value === undefined) return;
     const updatedFiles = [...files];
     // console.log("UpdatedFiles:",updatedFiles, activeTab);
-    updatedFiles[activeTab].value = value;
+    console.log("UpdatedFiles: ", updatedFiles)
+    // updatedFiles[activeTab].value = value;
+    const newFileTree = { ...fileTreeState } as Record<string, any>;
+    console.log("New Path: ", newFileTree)
+    getValueByPath(newFileTree, path, value);
+    console.log("NewFileTree: ", newFileTree)
+    setFileTreeState(newFileTree);
     setFiles(updatedFiles);
   }
+
+
 
   const handleCloseTab = (index: number) => {
     console.log("Index: ", index, activeTab);

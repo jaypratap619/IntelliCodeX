@@ -22,6 +22,7 @@ export const FileTreeContext = createContext<FileTreeContextType>({
     throw new Error("Function not implemented.");
   },
   activeFile: {
+    path: "",
     key: "",
     value: "",
   },
