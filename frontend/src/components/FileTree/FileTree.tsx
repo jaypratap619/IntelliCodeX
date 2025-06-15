@@ -1,13 +1,17 @@
 import { useContext, useEffect, useState } from "react";
-import type { IProjectResponse } from "../../pages/Sandbox";
 import FileName from "./FileName";
 import FolderName from "./FolderName";
 import { FileTreeContext } from "../../context/FileTreeContext";
 import type { IProject } from "../../App";
 import { useParams } from "react-router-dom";
 
-const FileTree = (props: IProjectResponse) => {
-  const { projects } = useContext(FileTreeContext)
+const FileTree = () => {
+  const fileTreeContext = useContext(FileTreeContext);
+
+  if (!fileTreeContext) {
+    throw new Error("FileTreeContext is not provided");
+  }
+  const { fileTreeState, projects } = fileTreeContext;
 
   const { project_id } = useParams();
   console.log("id id", project_id)
@@ -27,17 +31,12 @@ const FileTree = (props: IProjectResponse) => {
   const recursiveTree = (item: any, depth: number = 0) => {
     return Object.keys(item).map((key) => {
       const value = item[key];
-      const padding = `pl-${Math.min(depth * 4, 20)}`; // max padding to avoid overflow
       console.log(key, value);
       return isFile(value) ? (
-        <div key={key} className={`flex items-center space-x-2 py-1 ${padding} hover:bg-gray-100 rounded cursor-pointer`}>
-          <FileName filename={key} fileValue={value} />
-        </div>
+        <FileName filename={key} fileValue={value} key={key} depth={depth} />
       ) : (
-        <div key={key} className={`py-1`}>
-          <div className={`flex items-center space-x-2 ${padding} hover:bg-gray-200 rounded cursor-pointer`}>
-            <FolderName folderName={key} />
-          </div>
+        <div key={key + depth} className={`py-1`}>
+          <FolderName folderName={key} depth={depth} />
           <div className="ml-2 border-l border-gray-300 pl-2">
             {recursiveTree(value, depth + 1)}
           </div>
@@ -49,7 +48,7 @@ const FileTree = (props: IProjectResponse) => {
   return (
     <div className="h-[650px] border border-gray-300 rounded-lg p-4 shadow-md bg-white overflow-y-auto">
       <h2 className="text-lg font-semibold mb-4">{currentProject.project_name}</h2>
-      {props?.responseData?.root && recursiveTree(props.responseData.root)}
+      {fileTreeState?.root && recursiveTree(fileTreeState.root)}
     </div>
   );
 };

@@ -38,7 +38,7 @@ const Sandbox = () => {
     url: `/projects/${project_id}`,
     method: 'GET'
   }
-  const { responseData, loading, error, callApi }: IProjectResponse = useAxios(config)
+  const { responseData, callApi }: IProjectResponse = useAxios(config)
 
 
 
@@ -54,7 +54,6 @@ const Sandbox = () => {
     console.log("ResponseData:", responseData)
     if (responseData && responseData.root && responseData.root.src) {
       console.log("Key: ", activeFile.key)
-      // root.src["App.js"]
       setActiveFile({ path: activeFile.path, key: activeFile.key, value: responseData?.root?.src?.[activeFile.key] })
       setFileTreeState(responseData);
     }
@@ -69,7 +68,7 @@ const Sandbox = () => {
         <PanelGroup direction="horizontal">
           <Panel defaultSize={20} minSize={10}>
             <div className="h-full bg-[#1e1e1e] p-2 overflow-y-auto">
-              <FileTree responseData={responseData} loading={loading} error={error} callApi={callApi} />
+              <FileTree />
             </div>
           </Panel>
 
@@ -85,7 +84,7 @@ const Sandbox = () => {
 
           <Panel defaultSize={30} minSize={20}>
             <div className="h-full bg-white p-2">
-              <Preview responseData={responseData} loading={loading} error={error} callApi={callApi} />
+              <Preview />
             </div>
           </Panel>
         </PanelGroup>

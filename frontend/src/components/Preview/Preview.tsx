@@ -1,100 +1,120 @@
 import { useContext, useEffect, useRef, useState } from "react";
-// import { useParams } from "react-router-dom";
 import * as esbuild from "esbuild-wasm";
 import { virtualPlugin, flattenFiles } from "../../utils/utils.ts";
 import { FileTreeContext } from "../../context/FileTreeContext.ts";
-// import type { AxiosRequestConfig } from "axios";
-// import useAxios from "../../hooks/useAxios.tsx";
 
-
-// type Props = {
-
-// };
+let isEsbuildInitialized = false;
 
 const Preview = () => {
-  // const { project_id } = useParams();
-  // const { data, loading, error } = useFetch(`/project/get_project/${project_id}/files`)
-  const {fileTreeState} = useContext(FileTreeContext)
+  const { fileTreeState } = useContext(FileTreeContext);
 
   const iframeHtml = `
-  <html>
-  <body>
-  <div id="root"></div>
-  <script>window.addEventListener('message', (event) => { eval(event.data); }, false);</script>
-  </body>
-  </html>
+    <html>
+      <body>
+        <div id="root"></div>
+        <script>
+          window.addEventListener('message', (event) => {
+            eval(event.data);
+          }, false);
+        </script>
+      </body>
+    </html>
   `;
+
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [files, setFiles] = useState<Record<string, string> | null>(null);
-  const [isEsbuildInitialized, setIsEsbuildInitialized] = useState(false);
+  const [esbuildInitialized, setEsbuildInitialized] = useState(false);
 
-  // useEffect(() => {
-  //   props.callApi()
-  // }, [])
-
-
+  // ✅ Initialize esbuild once globally
   useEffect(() => {
-    if (!isEsbuildInitialized) {
-      const initializeEsbuild = async () => {
+    let cancelled = false;
+
+    const initializeEsbuild = async () => {
+      if (!isEsbuildInitialized) {
         await esbuild.initialize({
           wasmURL: "https://unpkg.com/esbuild-wasm@0.17.19/esbuild.wasm",
           worker: true,
         });
-        setIsEsbuildInitialized(true);
-      };
-      initializeEsbuild();
-    }
+
+        if (!cancelled) {
+          isEsbuildInitialized = true;
+          setEsbuildInitialized(true);
+        }
+      } else {
+        setEsbuildInitialized(true); // even if already initialized, set local state
+      }
+    };
+
+    initializeEsbuild();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
-    const bundleCode = async () => {
-      if (!files) return;
-      const result = await esbuild.build({
-        entryPoints: ["main.js"],
-        bundle: true,
-        write: false,
-        format: "esm",
-        plugins: [virtualPlugin(files)],
-      });
-      iframeRef.current!.contentWindow!.postMessage(
-        result.outputFiles[0].text,
-        "*"
-      );
-    };
-    if (isEsbuildInitialized && files) bundleCode();
-  }, [isEsbuildInitialized, files]);
+    let isMounted = true;
 
-  useEffect(() => {
     if (fileTreeState) {
       const flatFiles = flattenFiles(fileTreeState.root);
-      console.log("flatFiles", flatFiles);
-      setFiles(flatFiles);
+      if (isMounted) setFiles(flatFiles);
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [fileTreeState]);
 
-  // if (props.error) {
-  //   return <>{props.error}</>
-  // }
-  // if (props.loading) {
-  //   return <>....Loading</>
-  // }
+  useEffect(() => {
+    let isMounted = true;
 
-  if (fileTreeState) {
-    return (
-      <div className="h-[650px] border border-gray-300 rounded-lg p-4 shadow-md bg-white">
-        <h2 className="text-lg font-semibold mb-4">Preview</h2>
-        <div className="flex flex-col h-screen">
-          <iframe
-            title="preview"
-            ref={iframeRef}
-            sandbox="allow-scripts"
-            srcDoc={iframeHtml}
-            className="w-full h-full"
-          />
-        </div>
+    const bundleCode = async () => {
+      if (!files || !iframeRef.current) return;
+
+      try {
+        const result = await esbuild.build({
+          entryPoints: ["main.jsx"],
+          bundle: true,
+          write: false,
+          format: "esm",
+          plugins: [virtualPlugin(files)],
+        });
+
+        if (isMounted && iframeRef.current?.contentWindow) {
+          iframeRef.current.contentWindow.postMessage(result.outputFiles[0].text, "*");
+        }
+      } catch (err) {
+        console.error("Build error:", err);
+      }
+    };
+
+    if (esbuildInitialized && files) {
+      bundleCode();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [esbuildInitialized, files]);
+
+  if (!fileTreeState) {
+    return <div className="text-center text-gray-500">...Loading Preview</div>;
+  }
+
+  return (
+    <div className="h-[650px] border border-gray-300 rounded-lg p-4 shadow-md bg-white">
+      <h2 className="text-lg font-semibold mb-4">Preview</h2>
+      <div className="flex flex-col h-screen">
+        <iframe
+          title="preview"
+          ref={iframeRef}
+          sandbox="allow-scripts"
+          srcDoc={iframeHtml}
+          className="w-full h-full"
+        />
       </div>
-    );
-  };
-}
+    </div>
+  );
+};
 
 export default Preview;
