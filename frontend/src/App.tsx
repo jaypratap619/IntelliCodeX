@@ -16,7 +16,7 @@ const initalProjectsData: IProject[] = []
 const App: React.FC = () => {
   const [projects, setProjects] = useState<IProject[]>(initalProjectsData)
   const [fileTreeState, setFileTreeState] = useState<IResponseData>({});
-  const [activeFile, setActiveFile] = useState<IFile>({ path: "root.src", key: "App.js", value: "" });
+  const [activeFile, setActiveFile] = useState<IFile>({ path: "root.src", key: "App.jsx", value: "" });
   return (
     <FileTreeContext.Provider value={{ fileTreeState, setFileTreeState, activeFile, setActiveFile, projects, setProjects }}>
       <BrowserRouter>

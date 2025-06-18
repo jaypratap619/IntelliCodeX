@@ -1,4 +1,6 @@
 import * as esbuild from "esbuild-wasm";
+
+// Flattens nested file tree into a flat object with file paths
 export function flattenFiles(obj: any, prefix = ""): Record<string, string> {
   let result: Record<string, string> = {};
   for (const key in obj) {
@@ -20,8 +22,8 @@ export const virtualPlugin = (
     name: "virtual-filesystem",
     setup(build) {
       // Handle entry file like "main.js"
-      build.onResolve({ filter: /^main\.js$/ }, () => ({
-        path: "main.js",
+      build.onResolve({ filter: /^main\.jsx$/ }, () => ({
+        path: "main.jsx",
         namespace: "virtual",
       }));
 
@@ -48,15 +50,47 @@ export const virtualPlugin = (
         namespace: "url",
       }));
 
-      // Load files from the virtual filesystem
-      build.onLoad({ filter: /.*/, namespace: "virtual" }, async (args) => {
+      // Load JS/TS/JSX/TSX files from virtual filesystem
+      build.onLoad(
+        { filter: /\.(js|ts|jsx|tsx)$/, namespace: "virtual" },
+        async (args) => {
+          const content = files[args.path.replace(/^\/+/, "")];
+          if (!content) {
+            throw new Error(
+              `File not found in virtual filesystem: ${args.path}`
+            );
+          }
+          return {
+            contents: content,
+            loader: "jsx",
+          };
+        }
+      );
+
+      // ✅ Load and transform .css files into JS code that injects <style>
+      build.onLoad({ filter: /\.css$/, namespace: "virtual" }, async (args) => {
         const content = files[args.path.replace(/^\/+/, "")];
         if (!content) {
-          throw new Error(`File not found in virtual filesystem: ${args.path}`);
+          throw new Error(
+            `CSS file not found in virtual filesystem: ${args.path}`
+          );
         }
+
+        // Escape backticks and backslashes to safely inject CSS into template literal
+        const escaped = content
+          .replace(/\\/g, "\\\\")
+          .replace(/`/g, "\\`")
+          .replace(/\$/g, "\\$");
+
+        const injectedStyleCode = `
+          const style = document.createElement('style');
+          style.innerText = \`${escaped}\`;
+          document.head.appendChild(style);
+        `;
+
         return {
-          contents: content,
-          loader: "jsx",
+          contents: injectedStyleCode,
+          loader: "js",
         };
       });
 
@@ -75,7 +109,7 @@ export const virtualPlugin = (
             if (subpath.startsWith("-/")) {
               return `from "${subpath}"`;
             }
-            return `from "/${subpath}"`; // leave untouched if not Skypack style
+            return `from "/${subpath}"`;
           }
         );
 

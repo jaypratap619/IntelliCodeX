@@ -21,37 +21,60 @@ const CodeEditor = () => {
   const { fileTreeState, setFileTreeState, activeFile, setActiveFile } = fileTreeContext;
   console.log("fileTreeState", fileTreeState);
 
-  function extractExtension(fileName: string) {
+  // function extractExtension(fileName: string) {
+  //   const obj = {
+  //     js: 'javascript',
+  //     css: 'css',
+  //     html: 'html',
+  //     md: 'markdown'
+  //   };
+  //   const ext = fileName.split('.')[1]
+  //   return obj[ext as keyof typeof obj];
+  // }
+
+  function extractExtension(fileName: string): string {
     const obj = {
       js: 'javascript',
+      jsx: 'javascript',
+      ts: 'typescript',
+      tsx: 'typescript',
       css: 'css',
+      scss: 'scss',
       html: 'html',
-      md: 'markdown'
+      md: 'markdown',
+      json: 'json',
+      xml: 'xml',
+      yaml: 'yaml',
+      yml: 'yaml',
+      sql: 'sql',
+      py: 'python',
+      java: 'java',
+      cpp: 'cpp',
+      c: 'c',
+      sh: 'shell',
+      txt: 'plaintext',
     };
-    const ext = fileName.split('.')[1]
-    return obj[ext as keyof typeof obj];
+
+    const ext = fileName.split('.').pop() || '';
+    return obj[ext as keyof typeof obj] || 'plaintext';
   }
 
-  useEffect(() => {
-    setFiles([{ name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value }])
-  }, [])
 
   useEffect(() => {
-    // setFiles([...files, { name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value}])
-    files.map((file) => {
-      if (file.name != activeFile.key) {
-        setFiles([...files, { name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value }])
-      }
-    })
+    const existingFileIndex = files.findIndex(file => file.name === activeFile.key);
+    if (existingFileIndex !== -1) {
+      setActiveTab(existingFileIndex);
+    } else {
+      const newFile = {
+        name: activeFile.key,
+        language: extractExtension(activeFile.key),
+        value: activeFile.value,
+      };
+      setFiles(prev => [...prev, newFile]);
+      setActiveTab(files.length);
+    }
+  }, [activeFile]);
 
-    // setFiles([{ name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value}])
-  }, [activeFile.key])
-
-  // const [files, setFiles] = useState<File[]>([{ name: activeFile.key, language: extractExtension(activeFile.key), value: activeFile.value }]);
-
-  // useEffect(() => {
-  //   console.log("NewFileTree:", fileTreeState)
-  // }, [fileTreeState])
 
   function getValueByPath(obj: Record<string, any>, path: string, value: string) {
     console.log("Hi There...")
@@ -89,16 +112,40 @@ const CodeEditor = () => {
 
 
 
+  // const handleCloseTab = (index: number) => {
+  //   console.log("Index: ", index, activeTab);
+  //   const newFiles = files.filter((_, i) => i != index);
+  //   setFiles(newFiles);
+  //   if (index === activeTab) {
+  //     setActiveTab(index > 0 ? index - 1 : 0);
+  //   }
+  // }
+
   const handleCloseTab = (index: number) => {
-    console.log("Index: ", index, activeTab);
-    const newFiles = files.filter((_, i) => i != index);
+    const newFiles = files.filter((_, i) => i !== index);
     setFiles(newFiles);
 
-    if (index === activeTab) {
-      // Close the current Tab and move to the previous tab if exist else move to first
-      setActiveTab(index > 0 ? index - 1 : 0);
+    if (newFiles.length === 0) {
+      setActiveTab(-1);
+      return;
     }
-  }
+
+    let newActiveTab = activeTab;
+
+    if (index === activeTab) {
+      newActiveTab = index > 0 ? index - 1 : 0;
+      setActiveTab(newActiveTab);
+      setActiveFile({
+        key: newFiles[newActiveTab].name,
+        value: newFiles[newActiveTab].value,
+      });
+    } else if (index < activeTab) {
+      newActiveTab = activeTab - 1;
+      setActiveTab(newActiveTab);
+    }
+  };
+
+
 
   const openFile = (file: File, index: number) => {
     if (activeTab == index) return;
@@ -131,7 +178,7 @@ const CodeEditor = () => {
       </div>
 
       {/* Editor */}
-      {files.length > 0 ? (
+      {activeTab !== -1 && files.length > 0 ? (
         <div className="flex-1">
           <Editor
             height="100%"
