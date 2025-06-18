@@ -16,7 +16,7 @@ const FileTree = (props: IProjectResponse) => {
 
 
   function getCurrentProject(id: string | undefined) {
-    let current = projects.filter((p: IProject) => p.project_id === id)
+    const current = projects.filter((p: IProject) => p.project_id === id)
     setCurrentProject(current[0])
   }
 

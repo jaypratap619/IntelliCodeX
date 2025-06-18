@@ -85,7 +85,7 @@ const Sandbox = () => {
 
           <Panel defaultSize={30} minSize={20}>
             <div className="h-full bg-white p-2">
-              <Preview responseData={responseData} loading={loading} error={error} callApi={callApi} />
+              <Preview/>
             </div>
           </Panel>
         </PanelGroup>
