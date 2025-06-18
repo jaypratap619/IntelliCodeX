@@ -41,14 +41,17 @@ const Sandbox = () => {
   const { responseData, callApi }: IProjectResponse = useAxios(config)
 
 
-
   useEffect(() => {
     callApi();
   }, [])
 
   useEffect(() => {
+    if(responseData) setActiveFile({key: "App.jsx", value: responseData?.root?.src["App.jsx"], path: "root.src"})
+  }, [responseData])
+
+  useEffect(() => {
     console.log("Active File: ", activeFile);
-  }, [activeFile.key])
+  }, [activeFile])
 
   useEffect(() => {
     console.log("ResponseData:", responseData)
@@ -84,11 +87,7 @@ const Sandbox = () => {
 
           <Panel defaultSize={30} minSize={20}>
             <div className="h-full bg-white p-2">
-<<<<<<< HEAD
               <Preview/>
-=======
-              <Preview />
->>>>>>> a2f159a076de613622c9bb6bf1012af9279664d3
             </div>
           </Panel>
         </PanelGroup>

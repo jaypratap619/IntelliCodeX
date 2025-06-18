@@ -90,6 +90,10 @@ const CodeEditor = () => {
     current[activeFile.key] = value;
   }
 
+  useEffect(() => {
+    console.log("Files: ", files);
+  }, [fileTreeState])
+
 
   const handleEditorChange = (value: string | undefined) => {
     console.log("ActiveFile: ", activeFile)
@@ -105,9 +109,9 @@ const CodeEditor = () => {
     const newFileTree = { ...fileTreeState } as Record<string, any>;
     console.log("New Path: ", newFileTree)
     getValueByPath(newFileTree, path, value);
-    console.log("NewFileTree: ", newFileTree)
     setFileTreeState(newFileTree);
     setFiles(updatedFiles);
+    setActiveFile({ ...activeFile, value: value });
   }
 
 

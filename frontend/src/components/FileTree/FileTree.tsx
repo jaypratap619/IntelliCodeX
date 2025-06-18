@@ -31,7 +31,7 @@ const FileTree = () => {
   const recursiveTree = (item: any, depth: number = 0) => {
     return Object.keys(item).map((key) => {
       const value = item[key];
-      console.log(key, value);
+      console.log("KeyV:", value);
       return isFile(value) ? (
         <FileName filename={key} fileValue={value} key={key} depth={depth} />
       ) : (
