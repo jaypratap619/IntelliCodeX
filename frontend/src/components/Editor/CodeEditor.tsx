@@ -67,7 +67,6 @@ const CodeEditor = () => {
     current[activeFile.key] = value;
   }
 
-  // Handle initial load from Sandbox defaultFile
   useEffect(() => {
     if (defaultFile) {
       const newFile = {
@@ -82,26 +81,27 @@ const CodeEditor = () => {
     }
   }, [defaultFile]);
 
-  // Handle tab switching or adding new tabs
   useEffect(() => {
     if (!activeFile.key) return;
 
-    const existingFileIndex = files.findIndex((file) => file.name === activeFile.key);
+    setFiles((prevFiles) => {
+      const existingIndex = prevFiles.findIndex((file) => file.name === activeFile.key);
 
-    if (existingFileIndex !== -1) {
-      setActiveTab(existingFileIndex);
-    } else {
-      const newFile = {
-        name: activeFile.key,
-        language: extractExtension(activeFile.key),
-        value: activeFile.value,
-      };
-      setFiles((prev) => [...prev, newFile]);
-      setActiveTab(files.length);
-    }
+      if (existingIndex !== -1) {
+        setActiveTab(existingIndex);
+        return prevFiles;
+      } else {
+        const newFile = {
+          name: activeFile.key,
+          language: extractExtension(activeFile.key),
+          value: activeFile.value,
+        };
+        setActiveTab(prevFiles.length);
+        return [...prevFiles, newFile];
+      }
+    });
   }, [activeFile.key]);
 
-  // 🔁 Always keep fileTreeState in sync with latest activeFile.value
   useEffect(() => {
     if (!activeFile.key || activeFile.value === undefined) return;
 
@@ -114,10 +114,13 @@ const CodeEditor = () => {
   const handleEditorChange = (value: string | undefined) => {
     if (value === undefined) return;
 
-    const updatedFiles = [...files];
-    updatedFiles[activeTab].value = value;
-    setFiles(updatedFiles);
-    setActiveFile({ ...activeFile, value }); // triggers sync effect above
+    setFiles((prev) => {
+      const updated = [...prev];
+      updated[activeTab].value = value;
+      return updated;
+    });
+
+    setActiveFile({ ...activeFile, value });
   };
 
   const handleCloseTab = (index: number) => {
@@ -137,6 +140,7 @@ const CodeEditor = () => {
       setActiveFile({
         key: newFiles[newActiveTab].name,
         value: newFiles[newActiveTab].value,
+        path: activeFile?.path || "root.src",
       });
     } else if (index < activeTab) {
       newActiveTab = activeTab - 1;
@@ -147,33 +151,13 @@ const CodeEditor = () => {
   const openFile = (file: File, index: number) => {
     if (activeTab === index) return;
 
-    // Step 1: Update tab
     setActiveTab(index);
-
-    // Step 2: Update active file
-    const updatedFile = {
+    setActiveFile({
       key: file.name,
       value: file.value,
-      path: activeFile?.path || "root.src", // ⚠️ Ensure path is passed correctly
-    };
-    setActiveFile(updatedFile);
-
-    // Step 3: Update fileTreeState so preview triggers
-    const newTree = { ...fileTreeState } as Record<string, any>;
-    const path = updatedFile.path;
-    getValueByPath(newTree, path, file.value);
-    setFileTreeState(newTree);
+      path: activeFile?.path || "root.src",
+    });
   };
-
-
-  useEffect(() => {
-    console.log("activeFile updated", activeFile);
-  }, [activeFile]);
-
-  useEffect(() => {
-    console.log("fileTreeState changed, triggering Preview");
-  }, [fileTreeState]);
-
 
   return (
     <div className="h-[650px] flex flex-col">
@@ -183,8 +167,8 @@ const CodeEditor = () => {
           <div
             key={file.name}
             className={`flex items-center space-x-1 px-4 py-2 text-sm font-medium rounded-t ${index === activeTab
-              ? "bg-white border border-b-0 border-gray-300 text-blue-600"
-              : "text-gray-600 bg-gray-100"
+                ? "bg-white border border-b-0 border-gray-300 text-blue-600"
+                : "text-gray-600 bg-gray-100"
               }`}
           >
             <button onClick={() => openFile(file, index)}>{file.name}</button>
