@@ -25,46 +25,37 @@ export interface IProjectResponse {
 export interface IFile {
   path?: string | "";
   key: string;
-  value: string
+  value: string;
 }
-
 
 const Sandbox = () => {
   const { project_id } = useParams();
-  const { setFileTreeState, activeFile, setActiveFile } = useContext(FileTreeContext)
-
+  const { setFileTreeState, setActiveFile, setDefaultFile } = useContext(FileTreeContext);
 
   const config: AxiosRequestConfig = {
     url: `/projects/${project_id}`,
     method: 'GET'
   }
-  const { responseData, callApi }: IProjectResponse = useAxios(config)
-
+  const { responseData, callApi }: IProjectResponse = useAxios(config);
 
   useEffect(() => {
     callApi();
-  }, [])
+  }, []);
 
   useEffect(() => {
-    if(responseData) setActiveFile({key: "App.jsx", value: responseData?.root?.src["App.jsx"], path: "root.src"})
-  }, [responseData])
+    if (responseData && responseData.root?.src) {
+      const defaultKey = "App.jsx";
+      const defaultValue = responseData.root.src[defaultKey];
+      const defaultPath = "root.src";
 
-  useEffect(() => {
-    console.log("Active File: ", activeFile);
-  }, [activeFile])
-
-  useEffect(() => {
-    console.log("ResponseData:", responseData)
-    if (responseData && responseData.root && responseData.root.src) {
-      console.log("Key: ", activeFile.key)
-      setActiveFile({ path: activeFile.path, key: activeFile.key, value: responseData?.root?.src?.[activeFile.key] })
+      const defaultFile = { key: defaultKey, value: defaultValue, path: defaultPath };
       setFileTreeState(responseData);
+      setActiveFile(defaultFile);
+      setDefaultFile(defaultFile);
     }
-  }, [responseData, activeFile.key])
-
+  }, [responseData]);
 
   return (
-
     <div className="h-screen flex flex-col">
       <Navbar />
       <div className="flex-1">
@@ -87,7 +78,7 @@ const Sandbox = () => {
 
           <Panel defaultSize={30} minSize={20}>
             <div className="h-full bg-white p-2">
-              <Preview/>
+              <Preview />
             </div>
           </Panel>
         </PanelGroup>

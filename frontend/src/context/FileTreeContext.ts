@@ -1,36 +1,33 @@
-import { createContext, type SetStateAction } from "react";
+import { createContext } from "react";
 import type { IFile, IResponseData } from "../pages/Sandbox";
 import type { IProject } from "../App";
 
 export interface FileTreeContextType {
-  fileTreeState: IResponseData; // Replace `any` with the actual type of `fileTreeState`
-
-  setFileTreeState: React.Dispatch<React.SetStateAction<IResponseData>>; // Replace `any` with the actual type of `fileTreeState`
-
+  fileTreeState: IResponseData;
+  setFileTreeState: React.Dispatch<React.SetStateAction<IResponseData>>;
   activeFile: IFile;
-
   setActiveFile: React.Dispatch<React.SetStateAction<IFile>>;
-
   projects: IProject[];
-
   setProjects: React.Dispatch<React.SetStateAction<IProject[]>>;
+  defaultFile: IFile | null;
+  setDefaultFile: React.Dispatch<React.SetStateAction<IFile | null>>;
 }
 
 export const FileTreeContext = createContext<FileTreeContextType>({
   fileTreeState: {},
-  setFileTreeState: function (_value: SetStateAction<IResponseData>): void {
+  setFileTreeState: () => {
     throw new Error("Function not implemented.");
   },
-  activeFile: {
-    path: "",
-    key: "",
-    value: "",
-  },
-  setActiveFile: function (_value: SetStateAction<IFile>): void {
+  activeFile: { path: "", key: "", value: "" },
+  setActiveFile: () => {
     throw new Error("Function not implemented.");
   },
   projects: [],
-  setProjects: function (_value: SetStateAction<IProject[]>): void {
+  setProjects: () => {
+    throw new Error("Function not implemented.");
+  },
+  defaultFile: null,
+  setDefaultFile: () => {
     throw new Error("Function not implemented.");
   },
 });

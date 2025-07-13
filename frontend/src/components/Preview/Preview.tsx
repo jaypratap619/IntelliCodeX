@@ -57,6 +57,7 @@ const Preview = () => {
 
     if (fileTreeState) {
       const flatFiles = flattenFiles(fileTreeState.root);
+      console.log('flatFiles in Preview', flatFiles)
       if (isMounted) setFiles(flatFiles);
     }
 
