@@ -160,23 +160,23 @@ const CodeEditor = () => {
   };
 
   return (
-    <div className="h-[650px] flex flex-col">
+    <div className="h-[665px] mb-3 flex flex-col bg-[#1e1e1e] text-white">
       {/* Tabs */}
-      <div className="flex space-x-4 border-gray-300 mb-2 overflow-x-auto">
+      <div className="flex space-x-1 border-b border-gray-700 overflow-x-auto bg-[#252526] pt-2">
         {files.map((file, index) => (
           <div
             key={file.name}
-            className={`flex items-center space-x-1 px-4 py-2 text-sm font-medium rounded-t ${index === activeTab
-                ? "bg-white border border-b-0 border-gray-300 text-blue-600"
-                : "text-gray-600 bg-gray-100"
+            className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-t-md cursor-pointer transition ${index === activeTab
+              ? "bg-[#1e1e1e] border border-b-0 border-gray-600 text-blue-400"
+              : "text-gray-400 bg-[#2d2d2d] hover:bg-[#333] hover:text-gray-300"
               }`}
           >
             <button onClick={() => openFile(file, index)}>{file.name}</button>
             <button
-              className="text-gray-500 hover:text-red-600 ml-2"
+              className="text-gray-500 hover:text-red-400"
               onClick={() => handleCloseTab(index)}
             >
-              x
+              ×
             </button>
           </div>
         ))}
@@ -184,7 +184,7 @@ const CodeEditor = () => {
 
       {/* Editor */}
       {activeTab !== -1 && files.length > 0 ? (
-        <div className="flex-1">
+        <div className="h-full">
           <Editor
             height="100%"
             value={files[activeTab].value}
@@ -196,11 +196,13 @@ const CodeEditor = () => {
               quickSuggestions: true,
               wordBasedSuggestions: "currentDocument",
               tabCompletion: "on",
+              fontSize: 14,
+              minimap: { enabled: false },
             }}
           />
         </div>
       ) : (
-        <div className="flex-1 flex items-center justify-center text-gray-500 text-lg">
+        <div className="flex-1 flex items-center justify-center text-gray-400 text-lg">
           No files open. Please add a new file.
         </div>
       )}

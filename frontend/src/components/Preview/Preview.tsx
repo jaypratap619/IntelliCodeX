@@ -10,11 +10,16 @@ const Preview = () => {
 
   const iframeHtml = `
     <html>
-      <body>
+      <body style="margin:0; padding:0; background:white; color:black;">
         <div id="root"></div>
         <script>
           window.addEventListener('message', (event) => {
-            eval(event.data);
+            try {
+              eval(event.data);
+            } catch (err) {
+              const root = document.getElementById('root');
+              root.innerHTML = '<pre style="color:red; padding:1rem;">' + err + '</pre>';
+            }
           }, false);
         </script>
       </body>
@@ -25,7 +30,6 @@ const Preview = () => {
   const [files, setFiles] = useState<Record<string, string> | null>(null);
   const [esbuildInitialized, setEsbuildInitialized] = useState(false);
 
-  // ✅ Initialize esbuild once globally
   useEffect(() => {
     let cancelled = false;
 
@@ -41,7 +45,7 @@ const Preview = () => {
           setEsbuildInitialized(true);
         }
       } else {
-        setEsbuildInitialized(true); // even if already initialized, set local state
+        setEsbuildInitialized(true);
       }
     };
 
@@ -53,22 +57,13 @@ const Preview = () => {
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-
     if (fileTreeState) {
       const flatFiles = flattenFiles(fileTreeState.root);
-      console.log('flatFiles in Preview', flatFiles)
-      if (isMounted) setFiles(flatFiles);
+      setFiles(flatFiles);
     }
-
-    return () => {
-      isMounted = false;
-    };
   }, [fileTreeState]);
 
   useEffect(() => {
-    let isMounted = true;
-
     const bundleCode = async () => {
       if (!files || !iframeRef.current) return;
 
@@ -81,9 +76,7 @@ const Preview = () => {
           plugins: [virtualPlugin(files)],
         });
 
-        if (isMounted && iframeRef.current?.contentWindow) {
-          iframeRef.current.contentWindow.postMessage(result.outputFiles[0].text, "*");
-        }
+        iframeRef.current.contentWindow?.postMessage(result.outputFiles[0].text, "*");
       } catch (err) {
         console.error("Build error:", err);
       }
@@ -92,26 +85,22 @@ const Preview = () => {
     if (esbuildInitialized && files) {
       bundleCode();
     }
-
-    return () => {
-      isMounted = false;
-    };
   }, [esbuildInitialized, files]);
 
   if (!fileTreeState) {
-    return <div className="text-center text-gray-500">...Loading Preview</div>;
+    return <div className="text-center text-gray-400">...Loading Preview</div>;
   }
 
   return (
-    <div className="h-[650px] border border-gray-300 rounded-lg p-4 shadow-md bg-white">
-      <h2 className="text-lg font-semibold mb-4">Preview</h2>
-      <div className="flex flex-col h-screen">
+    <div className="h-[665px] border border-gray-700 rounded-lg shadow-lg bg-[#252526] text-gray-200">
+      <h2 className="text-lg font-semibold ml-2 py-2 text-blue-400 ">Preview</h2>
+      <div className="flex flex-col h-full">
         <iframe
           title="preview"
           ref={iframeRef}
           sandbox="allow-scripts"
           srcDoc={iframeHtml}
-          className="w-full h-full"
+          className="w-full h-full border border-gray-700 bg-white"
         />
       </div>
     </div>

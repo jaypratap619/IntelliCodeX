@@ -61,7 +61,7 @@ const Sandbox = () => {
       <div className="flex-1">
         <PanelGroup direction="horizontal">
           <Panel defaultSize={20} minSize={10}>
-            <div className="h-full bg-[#1e1e1e] p-2 overflow-y-auto">
+            <div className="bg-[#1e1e1e]">
               <FileTree />
             </div>
           </Panel>
@@ -69,7 +69,7 @@ const Sandbox = () => {
           <PanelResizeHandle className="w-1 bg-gray-600 cursor-col-resize" />
 
           <Panel defaultSize={50} minSize={30}>
-            <div className="h-full bg-[#282c34] p-2 overflow-y-auto">
+            <div className="bg-[#1e1e1e]">
               <CodeEditor />
             </div>
           </Panel>
@@ -77,7 +77,7 @@ const Sandbox = () => {
           <PanelResizeHandle className="w-1 bg-gray-600 cursor-col-resize" />
 
           <Panel defaultSize={30} minSize={20}>
-            <div className="h-full bg-white p-2">
+            <div className="bg-[#1e1e1e]">
               <Preview />
             </div>
           </Panel>
